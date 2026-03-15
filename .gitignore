@@ -1,0 +1,61 @@
+# Python virtual environments
+venv/
+.venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Jupyter and notebooks
+.ipynb_checkpoints/
+
+# IDE and editor settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and runtime files
+*.log
+logs/
+pip-wheel-metadata/
+*.egg-info/
+dist/
+build/
+
+# Test and coverage
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+.tox/
+.mypy_cache/
+
+# Mdels and large artifacts
+models/
+*.pkl
+*.onnx
+models/*.png
+models/*.svg
+
+# Secrets and environment
+.env
+.env.*
+secrets.*
+credentials.json
+
+# Misc
+.cache/
+tmp/
+temp/

@@ -1,0 +1,22 @@
+# Core data stack - The "Sweet Spot" for Python 3.13 + Streamlit
+pandas>=2.2.3,<3.0.0
+numpy>=2.1.0
+scikit-learn>=1.8.0
+joblib>=1.5.0
+
+# Modeling
+xgboost>=3.1.3
+shap>=0.51.0
+
+# Model export / runtime
+skl2onnx>=1.20.0
+onnxruntime>=1.24.3
+
+# Visualization / dashboard
+matplotlib>=3.10.0
+seaborn>=0.13.0
+streamlit>=1.55.0
+
+# Utilities
+python-dotenv>=1.0.1
+tqdm>=4.67.0
