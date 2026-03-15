@@ -17,12 +17,15 @@ The project uses the **Telco Customer Churn** dataset from Kaggle. It contains i
    cd ChurnGuard
 
 2. **Install dependencies:**
+    ```bash
     pip install --upgrade pip setuptools wheel
     pip install -r requirements.txt
 
 3. **Train:**
-    python -m src.train
     This will run hyperparameter search and save models/pipeline.pkl. Training time depends on machine resources.
+    ```bash
+    python -m src.train
 
 4. **Launch dashboard:**
+    ```bash
     python -m streamlit run app\streamlit_app.py
