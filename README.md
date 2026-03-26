@@ -1,11 +1,18 @@
 # ChurnGuard: End-to-End Customer Retention Analytics
 
-ChurnGuard is an end-to-end machine learning project designed to predict customer churn for a telecommunications provider. By identifying customers who are likely to cancel their subscription, businesses can implement proactive retention strategies to reduce revenue loss and improve customer lifetime value.
+Update:
+- What's customer churn?
+- In the telecommunication field...
+- This project solved [] using [] to achieve [accuracy Stacked OOF AUC: 0.84730]
+
+Replace:
+(ChurnGuard is an end-to-end machine learning project designed to predict customer churn for a telecommunications provider. By identifying customers who are likely to cancel their subscription, businesses can implement proactive retention strategies to reduce revenue loss and improve customer lifetime value.
 
 This project demonstrates the complete ML workflow from data preprocessing and feature engineering to model training, evaluation, and real-time inference through an interactive dashboard.
 
-The solution is powered by a high-performance XGBoost model, an automated preprocessing pipeline, and a Streamlit dashboard for interactive predictions.
+The solution is powered by a high-performance XGBoost model, an automated preprocessing pipeline, and a Streamlit dashboard for interactive predictions.)
 
+Keep:
 The project uses the **Telco Customer Churn** dataset from Kaggle. It contains information about 7,043 customers, including demographics, account information, and service usage.
 [Link to Dataset](https://www.kaggle.com/datasets/blastchar/telco-customer-churn)
 

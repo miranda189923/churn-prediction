@@ -1,7 +1,5 @@
 # Python virtual environments
-venv/
 .venv/
-ENV/
 env/
 env.bak/
 venv.bak/
@@ -60,4 +58,6 @@ credentials.json
 tmp/
 temp/
 node_modules/
+catboost_info/
 *_local.py
+*_local.ipynb
