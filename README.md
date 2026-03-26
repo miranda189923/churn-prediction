@@ -1,18 +1,17 @@
-# ChurnGuard: End-to-End Customer Retention Analytics
+# End-to-End Customer Retention Analytics
 
-Update:
-- What's customer churn?
-- In the telecommunication field...
-- This project solved [] using [] to achieve [accuracy Stacked OOF AUC: 0.84730]
+In the telecommunications industry, customer acquisition costs are significantly higher than retention costs. Churn is the "leaky bucket" problem where a small reduction in the attrition rate leads to a massive increase in long-term profitability.
 
-Replace:
-(ChurnGuard is an end-to-end machine learning project designed to predict customer churn for a telecommunications provider. By identifying customers who are likely to cancel their subscription, businesses can implement proactive retention strategies to reduce revenue loss and improve customer lifetime value.
+This project is an end-to-end predictive analytics suite designed to identify at-risk telecommunications subscribers. By combining a **Stacked Ensemble** machine learning pipeline with a modern React web interface, this project provides a professional-grade tool for reducing customer attrition and protecting revenue.
 
-This project demonstrates the complete ML workflow from data preprocessing and feature engineering to model training, evaluation, and real-time inference through an interactive dashboard.
+## Technical Stack
+- **Frontend:** React (Vite)
+- **Backend:** FastAPI (Python)
+- **Base Models:** LightGBM, XGBoost, and CatBoost (independently tuned via Optuna)
+- **Meta-Learner:** Logistic Regression aggregator for maximum prediction stability
+- **Performance:** Achieved a **Stacked OOF AUC of 0.84730**, demonstrating top-tier predictive power
 
-The solution is powered by a high-performance XGBoost model, an automated preprocessing pipeline, and a Streamlit dashboard for interactive predictions.)
-
-Keep:
+## Dataset
 The project uses the **Telco Customer Churn** dataset from Kaggle. It contains information about 7,043 customers, including demographics, account information, and service usage.
 [Link to Dataset](https://www.kaggle.com/datasets/blastchar/telco-customer-churn)
 
@@ -22,17 +21,32 @@ The project uses the **Telco Customer Churn** dataset from Kaggle. It contains i
    ```bash
    git clone [https://github.com/miranda189923/churnguard-customer-retention-ml.git](https://github.com/miranda189923/churnguard-customer-retention-ml.git)
    cd ChurnGuard
+    ```
 
-2. **Install dependencies:**
+2. **Install Dependencies**
+
+    **React Frontend:**
     ```bash
-    pip install --upgrade pip setuptools wheel
+    npm install
+    ```
+
+    **Python Backend & ML:**
+    ```bash
     pip install -r requirements.txt
+    ```
 
-3. **Train:**
-    This will run hyperparameter search and save models/pipeline.pkl. Training time depends on machine resources.
-    ```bash
-    python -m src.train
+3. **Train:** 
 
-4. **Launch dashboard:**
+    This script performs feature engineering, hyperparameter tuning, and saves the ensemble to ml/churn_model.joblib.
+
     ```bash
-    python -m streamlit run app\streamlit_app.py
+    python ml/train.py
+    ```
+
+4. **Start the website:**
+
+    The application will be available at `http://localhost:3000`. The backend will automatically detect the trained model file and use it for real-time predictions.
+
+    ```bash
+    npm run dev
+    ```

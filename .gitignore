@@ -1,63 +1,45 @@
-# Python virtual environments
-.venv/
-env/
-env.bak/
-venv.bak/
-
-# Python bytecode and caches
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.pyc
-
-# Jupyter and notebooks
-.ipynb_checkpoints/
-
-# IDE and editor settings
-.vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
-
-# OS files
+# System
 .DS_Store
 Thumbs.db
 
-# Logs and runtime files
-*.log
-logs/
-pip-wheel-metadata/
-*.egg-info/
+# Environments
+.venv/
+env/
+venv/
+.env
+*.env
+
+# Python & Caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.cache/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*_local.ipynb
+
+# Machine Learning Artifacts
+*.joblib
+*.pkl
+*.pth
+models/
+catboost_info/
+
+# Frontend
+node_modules/
 dist/
 build/
+.next/
+out/
 
-# Test and coverage
-.coverage
-coverage.xml
-htmlcov/
-.pytest_cache/
-.tox/
-.mypy_cache/
-
-# Mdels and large artifacts
-models/
-*.pkl
-*.onnx
-models/*.png
-models/*.svg
-
-# Secrets and environment
-.env
-.env.*
-secrets.*
-credentials.json
-
-# Misc
-.cache/
+# Local Scripts
+*_local.py
 tmp/
 temp/
-node_modules/
-catboost_info/
-*_local.py
-*_local.ipynb
+
+# IDE Settings
+.vscode/
+.idea/
+*.swp
