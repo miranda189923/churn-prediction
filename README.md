@@ -5,11 +5,11 @@ In the telecommunications industry, customer acquisition costs are significantly
 This project is an end-to-end predictive analytics suite designed to identify at-risk telecommunications subscribers. By combining a **Stacked Ensemble** machine learning pipeline with a modern React web interface, this project provides a professional-grade tool for reducing customer attrition and protecting revenue.
 
 ## Technical Stack
-- **Frontend:** React (Vite)
-- **Backend:** FastAPI (Python)
+- **Frontend:** React
+- **Backend:** FastAPI
 - **Base Models:** LightGBM, XGBoost, and CatBoost (independently tuned via Optuna)
 - **Meta-Learner:** Logistic Regression aggregator for maximum prediction stability
-- **Performance:** Achieved a **Stacked OOF AUC of 0.84730**, demonstrating top-tier predictive power
+- **Performance:** Achieved a **Stacked OOF AUC of 0.847**, demonstrating top-tier predictive power
 
 ## Dataset
 The project uses the **Telco Customer Churn** dataset from Kaggle. It contains information about 7,043 customers, including demographics, account information, and service usage.

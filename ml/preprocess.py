@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from itertools import combinations
+from sklearn.preprocessing import TargetEncoder
 
 class Preprocessor:
     def __init__(self, target_col='Churn'):
@@ -98,7 +99,6 @@ class Preprocessor:
         df['charges_deviation'] = (df['TotalCharges'] - df['tenure'] * df['MonthlyCharges']).astype('float32')
         df['monthly_to_total_ratio'] = (df['MonthlyCharges'] / (df['TotalCharges'] + 1)).astype('float32')
         df['avg_monthly_charges'] = (df['TotalCharges'] / (df['tenure'] + 1)).astype('float32')
-        # New features from Colab
         df['cost_per_service'] = (df['MonthlyCharges'] / (df['service_count'] + 1)).astype('float32')
         df['total_per_service'] = (df['TotalCharges'] / (df['service_count'] + 1)).astype('float32')
 
@@ -196,17 +196,12 @@ class Preprocessor:
                 df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')
                 df['TotalCharges'] = df['TotalCharges'].fillna(df['TotalCharges'].median())
         self._fit_stats(train)
-        
-        # NOTE: service_count must be created first because arithmetic interactions use it
         self._create_service_counts(train); self._create_service_counts(test)
         self.new_nums += ['service_count', 'has_internet', 'has_phone']
-        
         self._create_frequency_encoding(train); self._create_frequency_encoding(test)
         self.new_nums += [f'FREQ_{col}' for col in self.nums]
-        
         self._create_arithmetic_interactions(train); self._create_arithmetic_interactions(test)
         self.new_nums += ['charges_deviation', 'monthly_to_total_ratio', 'avg_monthly_charges', 'cost_per_service', 'total_per_service']
-        
         self._apply_distribution_features(train); self._apply_distribution_features(test)
         self.new_nums += self.dist_features
         self._apply_quantile_distance_features(train); self._apply_quantile_distance_features(test)
@@ -227,7 +222,6 @@ class Preprocessor:
             df[self.target_col] = df[self.target_col].astype(str).str.strip().str.capitalize().map({'No': 0, 'Yes': 1}).fillna(0).astype(int)
         if 'TotalCharges' in df.columns:
             df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce').fillna(self.total_charges_median)
-        
         self._create_service_counts(df)
         self._create_frequency_encoding(df)
         self._create_arithmetic_interactions(df)
