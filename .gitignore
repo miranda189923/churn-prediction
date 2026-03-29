@@ -1,45 +1,34 @@
-# System
+# OS / Temp
 .DS_Store
 Thumbs.db
 
-# Environments
-.venv/
-env/
-venv/
-.env
-*.env
+# Vite / Frontend
+node_modules
+dist
+dist-ssr
+*.local
 
-# Python & Caches
+# Environment
+.env
+.env.*
+
+# ML / Python
+*.pkl
+*.pickle
 __pycache__/
 *.py[cod]
 *$py.class
-.pytest_cache/
-.cache/
-
-# Jupyter Notebooks
-.ipynb_checkpoints/
+.venv/
+venv/
+ENV/
+catboost_info/
 *_local.ipynb
 
-# Machine Learning Artifacts
-*.joblib
-*.pkl
-*.pth
-models/
-catboost_info/
+# Logs
+*.log
+logs
 
-# Frontend
-node_modules/
-dist/
-build/
-.next/
-out/
-
-# Local Scripts
-*_local.py
-tmp/
-temp/
-
-# IDE Settings
-.vscode/
-.idea/
-*.swp
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
