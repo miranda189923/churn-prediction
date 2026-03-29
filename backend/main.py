@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse
 import pandas as pd
 from io import StringIO
 from .models import ChurnRequest
@@ -10,7 +10,7 @@ app = FastAPI(title="Telco Churn Predictor API", version="1.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],           # change to your frontend URL in prod
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -32,13 +32,21 @@ async def batch_predict(file: UploadFile = File(...)):
         df = pd.read_csv(StringIO(content.decode()))
         result_df = predict_batch(df)
         
-        output = StringIO()
-        result_df.to_csv(output, index=False)
-        return StreamingResponse(
-            iter([output.getvalue()]),
-            media_type="text/csv",
-            headers={"Content-Disposition": "attachment; filename=churn_predictions.csv"}
-        )
+        # Return rich JSON instead of forcing a download
+        return JSONResponse(content={
+            "success": True,
+            "message": f"Successfully processed {len(result_df)} customers",
+            "summary": {
+                "total_customers": len(result_df),
+                "predicted_churn_count": int((result_df["prediction"] == "Churn").sum()),
+                "churn_rate_percent": round((result_df["prediction"] == "Churn").mean() * 100, 1),
+                "high_risk_count": int((result_df["risk_level"] == "High").sum()),
+                "medium_risk_count": int((result_df["risk_level"] == "Medium").sum()),
+                "low_risk_count": int((result_df["risk_level"] == "Low").sum())
+            },
+            "data": result_df.to_dict(orient="records"),
+            "columns": list(result_df.columns)
+        })
     except Exception as e:
         raise HTTPException(500, str(e))
 

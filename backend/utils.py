@@ -3,6 +3,11 @@ import pandas as pd
 import numpy as np
 import joblib
 from typing import Dict, Any
+import sys
+import __main__
+from ml.preprocess import Preprocessor
+
+__main__.Preprocessor = Preprocessor
 
 MODEL_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "ml", "churn_model.joblib"))
 BUNDLE = None
@@ -27,6 +32,9 @@ def predict_single(data: Dict[str, Any]) -> Dict[str, Any]:
     df = pd.DataFrame([data])[expected_order]
     
     preprocessed = bundle["preprocessor"].transform(df)
+    print("NaNs after transform:", preprocessed.isna().sum().sum())
+    if preprocessed.isna().any().any():
+        print(preprocessed.columns[preprocessed.isna().any()].tolist())
     features = bundle["features"]
     X = preprocessed[features].copy()
     

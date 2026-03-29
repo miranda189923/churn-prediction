@@ -14,7 +14,9 @@ export default function App() {
   const [tab, setTab] = useState<"single" | "batch">("single");
   const [result, setResult] = useState<Prediction | null>(null);
   const [loading, setLoading] = useState(false);
-  const [batchPreview, setBatchPreview] = useState<string[][]>([]);
+  const [batchResults, setBatchResults] = useState<any[]>([]);
+  const [batchColumns, setBatchColumns] = useState<string[]>([]);
+  const [showAllColumns, setShowAllColumns] = useState(false);
 
   const [form, setForm] = useState({
     gender: "Male",
@@ -86,10 +88,12 @@ export default function App() {
     setLoading(false);
   };
 
+  // IMPROVED batch handler - now shows beautiful table + summary instead of forcing download
   const handleBatch = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setLoading(true);
+
     const fd = new FormData();
     fd.append("file", file);
 
@@ -98,20 +102,36 @@ export default function App() {
         method: "POST",
         body: fd,
       });
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "churn_predictions.csv";
-      a.click();
 
-      const text = await blob.text();
-      const rows = text.split("\n").slice(0, 6).map(row => row.split(","));
-      setBatchPreview(rows);
+      const json = await res.json();
+
+      if (json.success) {
+        setBatchResults(json.data);
+        setBatchColumns(json.columns);
+      } else {
+        alert(json.message || "Batch processing failed");
+      }
     } catch (err) {
-      alert("Batch failed. Make sure your CSV has all required columns.");
+      alert("Batch failed. Make sure your CSV has all required columns and the backend is running.");
     }
     setLoading(false);
+  };
+
+  // Download helper
+  const downloadCSV = () => {
+    if (!batchResults.length) return;
+    const headers = batchColumns.join(",");
+    const rows = batchResults.map(row =>
+      batchColumns.map(col => `"${String(row[col] || "").replace(/"/g, '""')}"`).join(",")
+    );
+    const csvContent = [headers, ...rows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `churn_predictions_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const inputClass = "w-full bg-zinc-800 border border-zinc-700 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/30 rounded-2xl p-4 text-white transition outline-none";
@@ -165,8 +185,8 @@ export default function App() {
         </div>
 
         {tab === "single" ? (
+          /* SINGLE TAB - completely unchanged */
           <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-            
             {/* Form Card */}
             <div className="xl:col-span-8 bg-zinc-900/50 backdrop-blur-sm rounded-3xl p-6 md:p-8 border border-zinc-800 shadow-2xl">
               <div className="flex items-center justify-between mb-8">
@@ -180,7 +200,7 @@ export default function App() {
               </div>
 
               <div className="space-y-10">
-                {/* Demographics */}
+                {/* Demographics, Services, Billing sections - unchanged */}
                 <div>
                   <div className="flex items-center gap-3 mb-5 border-b border-zinc-800 pb-3">
                     <User className="w-5 h-5 text-emerald-400" />
@@ -214,7 +234,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Services */}
                 <div>
                   <div className="flex items-center gap-3 mb-5 border-b border-zinc-800 pb-3">
                     <Phone className="w-5 h-5 text-emerald-400" />
@@ -278,7 +297,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Billing */}
                 <div>
                   <div className="flex items-center gap-3 mb-5 border-b border-zinc-800 pb-3">
                     <CreditCard className="w-5 h-5 text-emerald-400" />
@@ -321,7 +339,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* Sticky Result Card Sidebar */}
+            {/* Sticky Result Card Sidebar - unchanged */}
             <div className="xl:col-span-4 flex flex-col gap-6">
               <div className="bg-zinc-900/50 backdrop-blur-sm rounded-3xl p-8 border border-zinc-800 shadow-2xl sticky top-8">
                 <button
@@ -376,11 +394,10 @@ export default function App() {
                 </div>
               </div>
             </div>
-
           </div>
         ) : (
-          /* Batch Section */
-          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-3xl p-10 md:p-20 text-center border border-zinc-800 shadow-2xl">
+          /* BATCH SECTION - fully improved with on-page table + useful guidance */
+          <div className="bg-zinc-900/50 backdrop-blur-sm rounded-3xl p-10 md:p-20 border border-zinc-800 shadow-2xl">
             <div className="max-w-xl mx-auto">
               <div className="bg-emerald-500/10 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8">
                 <Upload className="w-10 h-10 text-emerald-400" />
@@ -396,26 +413,116 @@ export default function App() {
               </label>
             </div>
 
-            {batchPreview.length > 0 && (
-              <div className="mt-20 animate-in fade-in slide-in-from-bottom-4">
-                <h3 className="flex items-center gap-2 text-xl font-semibold mb-6 text-left text-zinc-200">
-                  <Users className="text-emerald-400" /> Data Preview
-                </h3>
-                <div className="overflow-x-auto rounded-2xl border border-zinc-800 bg-zinc-950 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
-                  <table className="w-full text-sm text-left">
-                    <tbody className="divide-y divide-zinc-800/50">
-                      {batchPreview.map((row, i) => (
+            {/* NEW: Rich results table with summary and guidance */}
+            {batchResults.length > 0 && (
+              <div className="mt-16">
+                {/* Summary guidance cards */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                  <div className="bg-zinc-950 rounded-2xl p-5 border border-zinc-800">
+                    <p className="text-zinc-400 text-sm">Total Customers</p>
+                    <p className="text-4xl font-bold text-white">{batchResults.length}</p>
+                  </div>
+                  <div className="bg-zinc-950 rounded-2xl p-5 border border-zinc-800">
+                    <p className="text-zinc-400 text-sm">Predicted Churn</p>
+                    <p className="text-4xl font-bold text-red-400">
+                      {batchResults.filter(r => r.prediction === "Churn").length}
+                      <span className="text-base font-normal text-zinc-400 ml-2">
+                        ({batchResults.filter(r => r.prediction === "Churn").length / batchResults.length * 100 | 0}%)
+                      </span>
+                    </p>
+                  </div>
+                  <div className="bg-zinc-950 rounded-2xl p-5 border border-zinc-800">
+                    <p className="text-zinc-400 text-sm">High Risk</p>
+                    <p className="text-4xl font-bold text-red-400">
+                      {batchResults.filter(r => r.risk_level === "High").length}
+                    </p>
+                  </div>
+                  <div className="bg-zinc-950 rounded-2xl p-5 border border-zinc-800">
+                    <p className="text-zinc-400 text-sm">Medium Risk</p>
+                    <p className="text-4xl font-bold text-amber-400">
+                      {batchResults.filter(r => r.risk_level === "Medium").length}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="flex items-center gap-2 text-2xl font-semibold text-zinc-100">
+                    <Users className="text-emerald-400" /> Batch Results
+                  </h3>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowAllColumns(!showAllColumns)}
+                      className="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-2xl text-sm font-medium transition"
+                    >
+                      {showAllColumns ? "Hide Advanced Features" : "Show All Engineered Features"}
+                    </button>
+                    <button
+                      onClick={downloadCSV}
+                      className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-white rounded-2xl text-sm font-medium flex items-center gap-2 transition"
+                    >
+                      Download Full CSV
+                    </button>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto rounded-3xl border border-zinc-800 bg-zinc-950">
+                  <table className="min-w-full text-sm">
+                    <thead className="bg-zinc-900 sticky top-0">
+                      <tr>
+                        <th className="px-6 py-4 text-left font-medium">Customer ID</th>
+                        <th className="px-6 py-4 text-left font-medium">Churn %</th>
+                        <th className="px-6 py-4 text-left font-medium">Prediction</th>
+                        <th className="px-6 py-4 text-left font-medium">Risk Level</th>
+                        <th className="px-6 py-4 text-left font-medium">Tenure</th>
+                        <th className="px-6 py-4 text-left font-medium">Monthly Charges</th>
+                        <th className="px-6 py-4 text-left font-medium">Contract</th>
+                        {showAllColumns && batchColumns
+                          .filter(col => !["customerID", "churn_probability", "prediction", "risk_level", "tenure", "MonthlyCharges", "Contract"].includes(col))
+                          .map(col => (
+                            <th key={col} className="px-6 py-4 text-left font-medium whitespace-nowrap text-xs">{col}</th>
+                          ))
+                        }
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-zinc-800">
+                      {batchResults.map((row, i) => (
                         <tr key={i} className="hover:bg-zinc-900/50 transition-colors">
-                          {row.map((cell, j) => (
-                            <td key={j} className="px-4 py-3 text-zinc-300 whitespace-nowrap">
-                              {cell}
-                            </td>
-                          ))}
+                          <td className="px-6 py-4 font-medium">{row.customerID}</td>
+                          <td className="px-6 py-4 font-mono">
+                            {(row.churn_probability * 100).toFixed(1)}%
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className={`inline-flex px-4 py-1 rounded-full text-xs font-semibold ${row.prediction === "Churn" ? "bg-red-500/20 text-red-400" : "bg-emerald-500/20 text-emerald-400"}`}>
+                              {row.prediction}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className={`inline-flex px-4 py-1 rounded-full text-xs font-semibold
+                              ${row.risk_level === "High" ? "bg-red-500 text-white" :
+                                row.risk_level === "Medium" ? "bg-amber-500 text-white" : "bg-emerald-500 text-white"}`}>
+                              {row.risk_level}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">{row.tenure}</td>
+                          <td className="px-6 py-4">${row.MonthlyCharges}</td>
+                          <td className="px-6 py-4">{row.Contract}</td>
+                          {showAllColumns && batchColumns
+                            .filter(col => !["customerID", "churn_probability", "prediction", "risk_level", "tenure", "MonthlyCharges", "Contract"].includes(col))
+                            .map(col => (
+                              <td key={col} className="px-6 py-4 text-xs text-zinc-400 whitespace-nowrap">
+                                {typeof row[col] === "number" ? row[col].toFixed(4) : row[col]}
+                              </td>
+                            ))
+                          }
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
+
+                <p className="text-xs text-zinc-500 mt-4 text-center">
+                  Scroll horizontally to see all columns • {batchResults.length} rows processed
+                </p>
               </div>
             )}
           </div>

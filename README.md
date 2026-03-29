@@ -9,7 +9,7 @@ This project is an end-to-end predictive analytics suite designed to identify at
 - **Backend:** FastAPI
 - **Base Models:** LightGBM, XGBoost, and CatBoost (independently tuned via Optuna)
 - **Meta-Learner:** Logistic Regression aggregator for maximum prediction stability
-- **Performance:** Achieved a **Stacked OOF AUC of 0.847**, demonstrating top-tier predictive power
+- **Performance:** Achieved a **Stacked OOF AUC of 0.85**, demonstrating top-tier predictive power
 
 ## Dataset
 The project uses the **Telco Customer Churn** dataset from Kaggle. It contains information about 7,043 customers, including demographics, account information, and service usage.
@@ -17,36 +17,38 @@ The project uses the **Telco Customer Churn** dataset from Kaggle. It contains i
 
 ## Installation & Usage
 
-1. **Clone the repository:**
+1. **Clone the Repository:**
    ```bash
-   git clone [https://github.com/miranda189923/churnguard-customer-retention-ml.git](https://github.com/miranda189923/churnguard-customer-retention-ml.git)
+   git clone [https://github.com/miranda189923/churn-prediction.git](https://github.com/miranda189923/churn-prediction.git)
    cd ChurnGuard
     ```
 
-2. **Install Dependencies**
-
-    **React Frontend:**
+2. **Install Dependencies:** 
     ```bash
-    npm install
-    ```
-
-    **Python Backend & ML:**
-    ```bash
+    python -m venv .venv
+    source .venv/bin/activate    # Windows: .venv\Scripts\activate
     pip install -r requirements.txt
+    python ml/train.py
     ```
 
-3. **Train:** 
-
+3.  **Training:**
+    
     This script performs feature engineering, hyperparameter tuning, and saves the ensemble to ml/churn_model.joblib.
-
+    
     ```bash
     python ml/train.py
     ```
 
-4. **Start the website:**
+4.  **Backend:**
+    ```bash
+    uvicorn backend.main:app --reload
+    ```
 
-    The application will be available at `http://localhost:3000`. The backend will automatically detect the trained model file and use it for real-time predictions.
+5. **Start the Website:**
+
+    The application will be available at `http://localhost:5173/`. The backend will automatically detect the trained model file and use it for real-time predictions.
 
     ```bash
+    cd frotend
     npm run dev
     ```
