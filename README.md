@@ -19,7 +19,7 @@ The project uses the **Telco Customer Churn** dataset from Kaggle. It contains i
 
 1. **Clone the Repository:**
    ```bash
-   git clone [https://github.com/miranda189923/churn-prediction.git](https://github.com/miranda189923/churn-prediction.git)
+   git clone https://github.com/miranda189923/churn-prediction.git
    cd ChurnGuard
     ```
 
