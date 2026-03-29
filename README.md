@@ -28,7 +28,6 @@ The project uses the **Telco Customer Churn** dataset from Kaggle. It contains i
     python -m venv .venv
     source .venv/bin/activate    # Windows: .venv\Scripts\activate
     pip install -r requirements.txt
-    python ml/train.py
     ```
 
 3.  **Training:**
