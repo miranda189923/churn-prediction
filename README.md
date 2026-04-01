@@ -30,10 +30,10 @@ The project uses the **Telco Customer Churn** dataset from Kaggle. It contains i
     pip install -r requirements.txt
     ```
 
-3.  **Training:**
+3.  **Training (optional):**
     
-    This script performs feature engineering, hyperparameter tuning, and saves the ensemble to ml/churn_model.joblib.
-    
+    A pre-trained stacked ensemble model (ml/churn_model.joblib) is included in the repository, allowing the application to run immediately. If you would like to modify the feature engineering pipeline, tune hyperparameters, or retrain the ensemble from scratch, run:
+
     ```bash
     python ml/train.py
     ```
@@ -48,6 +48,7 @@ The project uses the **Telco Customer Churn** dataset from Kaggle. It contains i
     The application will be available at `http://localhost:5173/`. The backend will automatically detect the trained model file and use it for real-time predictions.
 
     ```bash
-    cd frotend
+    cd frontend
+    npm install
     npm run dev
     ```
